@@ -4,7 +4,6 @@ const withCss = require('@zeit/next-css')
 const withTM = require('@weco/next-plugin-transpile-modules')
 const withOffline = require('next-offline')
 
-global.navigator = () => null
 if (typeof require !== 'undefined') {
   require.extensions['.css'] = () => {}
   require.extensions['.less'] = () => {}
