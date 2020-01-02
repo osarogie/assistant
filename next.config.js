@@ -11,11 +11,6 @@ if (typeof require !== 'undefined') {
 module.exports = withCss(
   withOffline(
     withTM({
-      publicRuntimeConfig: {
-        SITE_HOST: process.env.SITE_HOST,
-        SECURE_HOST: process.env.SECURE_HOST,
-        API_HOST: process.env.API_HOST
-      },
       poweredByHeader: false,
       transpileModules: ['react-native-web'],
       workboxOpts: {
