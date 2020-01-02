@@ -6,16 +6,12 @@ const withOffline = require('next-offline')
 
 if (typeof require !== 'undefined') {
   require.extensions['.css'] = () => {}
+  require.extensions['.less'] = () => {}
 }
 
 module.exports = withCss(
   withOffline(
     withTM({
-      publicRuntimeConfig: {
-        SITE_HOST: process.env.SITE_HOST,
-        SECURE_HOST: process.env.SECURE_HOST,
-        API_HOST: process.env.API_HOST
-      },
       poweredByHeader: false,
       transpileModules: ['react-native-web'],
       workboxOpts: {
@@ -43,7 +39,7 @@ module.exports = withCss(
           }
         ]
       },
-      webpack(config) {
+      webpack(config, { isServer }) {
         const originalEntry = config.entry
         config.entry = async () => {
           const entries = await originalEntry()
@@ -81,6 +77,27 @@ module.exports = withCss(
             loader: 'file-loader?outputPath=static/'
           }
         )
+
+        if (isServer) {
+          const antStyles = /antd\/.*?\/style\/css.*?/
+          const origExternals = [...config.externals]
+          config.externals = [
+            (context, request, callback) => {
+              if (request.match(antStyles)) return callback()
+              if (typeof origExternals[0] === 'function') {
+                origExternals[0](context, request, callback)
+              } else {
+                callback()
+              }
+            },
+            ...(typeof origExternals[0] === 'function' ? [] : origExternals)
+          ]
+
+          config.module.rules.unshift({
+            test: antStyles,
+            use: 'null-loader'
+          })
+        }
 
         return config
       }
