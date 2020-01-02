@@ -1,14 +1,4 @@
 {
   "alias": "assistant.osarogie.com",
-  "routes": [
-    {
-      "src": "^/service-worker.js$",
-      "dest": "/_next/service-worker.js",
-      "headers": {
-        "cache-control": "public, max-age=43200, immutable",
-        "Service-Worker-Allowed": "/"
-      }
-    }
-  ],
   "version": 2
 }
