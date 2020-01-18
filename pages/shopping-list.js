@@ -5,7 +5,9 @@ import {
   useFirestoreCollectionData,
   useFirestore
 } from 'reactfire'
-import { PageContainer } from '../src/PageContainer'
+import { PageContainer } from '../src/components/PageContainer'
+import { List, Avatar } from 'antd'
+import { Table, Divider, Tag } from 'antd'
 
 const NewEntry = ({ saveAnimal }) => {
   const [text, setText] = useState('')
@@ -28,29 +30,49 @@ const NewEntry = ({ saveAnimal }) => {
         onChange={({ target }) => setText(target.value)}
       />
       <button onClick={onSave} disabled={disabled || text.length < 3}>
-        Add new subscription
+        Add new bill
       </button>
     </>
   )
 }
 
-const List = ({ query, removeEntry }) => {
+const FirebaseList = ({ query, removeEntry }) => {
   const subs = useFirestoreCollectionData(query, { idField: 'id' })
-  return (
-    <ul>
-      {subs.map(sub => (
-        <li key={sub.id}>
-          {sub.commonName}{' '}
-          <button onClick={() => removeEntry(sub.id)}>X</button>
-        </li>
-      ))}
-    </ul>
-  )
+
+  const columns = [
+    {
+      title: 'Name',
+      dataIndex: 'commonName',
+      key: 'name',
+      render: text => text
+    },
+    {
+      title: 'Price',
+      dataIndex: 'price',
+      key: 'price'
+    },
+    {
+      title: 'Source',
+      dataIndex: 'source',
+      key: 'source'
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: ({ id }) => (
+        <span>
+          <a onClick={() => removeEntry(id)}>Delete</a>
+        </span>
+      )
+    }
+  ]
+
+  return <Table columns={columns} dataSource={subs}></Table>
 }
 
 const FavoriteSubs = props => {
   const firestore = useFirestore()
-  const baseRef = firestore().collection('subscriptions')
+  const baseRef = firestore().collection('wish')
   const [isAscending, setIsAscending] = useState(true)
   const query = baseRef.orderBy('commonName', isAscending ? 'asc' : 'desc')
   const [startTransition, isPending] = useTransition({
@@ -75,7 +97,7 @@ const FavoriteSubs = props => {
         Sort {isAscending ? '^' : 'v'}
       </button>
       <React.Suspense fallback="loading...">
-        <List query={query} removeEntry={removeEntry} />
+        <FirebaseList query={query} removeEntry={removeEntry} />
       </React.Suspense>
     </>
   )

@@ -5,7 +5,10 @@ import {
   useFirestoreCollectionData,
   useFirestore
 } from 'reactfire'
-import { PageContainer } from '../src/PageContainer'
+import { PageContainer } from '../src/components/PageContainer'
+import { AddButton } from '../src/components/AddButton'
+import { Collapse } from 'antd'
+const { Panel } = Collapse
 
 const NewEntry = ({ saveAnimal }) => {
   const [text, setText] = useState('')
@@ -20,37 +23,41 @@ const NewEntry = ({ saveAnimal }) => {
   }
 
   return (
-    <>
-      <input
-        value={text}
-        disabled={disabled}
-        placeholder="Iguana"
-        onChange={({ target }) => setText(target.value)}
-      />
-      <button onClick={onSave} disabled={disabled || text.length < 3}>
-        Add new subscription
-      </button>
-    </>
+    // <>
+    //   <input
+    //     value={text}
+    //     disabled={disabled}
+    //     placeholder="Iguana"
+    //     onChange={({ target }) => setText(target.value)}
+    //   />
+    //   <button onClick={onSave} disabled={disabled || text.length < 3}>
+    //     Add new goal
+    //   </button>
+    // </>
+
+    <AddButton placeholder="Add new goal" onEnter={onSave}></AddButton>
   )
 }
 
 const List = ({ query, removeEntry }) => {
   const subs = useFirestoreCollectionData(query, { idField: 'id' })
   return (
-    <ul>
-      {subs.map(sub => (
-        <li key={sub.id}>
-          {sub.commonName}{' '}
-          <button onClick={() => removeEntry(sub.id)}>X</button>
-        </li>
-      ))}
-    </ul>
+    <>
+      <Collapse bordered={false} defaultActiveKey={['1']}>
+        {subs.map(sub => (
+          <Panel header={sub.commonName} key={sub.id}>
+            {sub.commonName}{' '}
+            <button onClick={() => removeEntry(sub.id)}>X</button>
+          </Panel>
+        ))}
+      </Collapse>
+    </>
   )
 }
 
 const FavoriteSubs = props => {
   const firestore = useFirestore()
-  const baseRef = firestore().collection('subscriptions')
+  const baseRef = firestore().collection('goals')
   const [isAscending, setIsAscending] = useState(true)
   const query = baseRef.orderBy('commonName', isAscending ? 'asc' : 'desc')
   const [startTransition, isPending] = useTransition({

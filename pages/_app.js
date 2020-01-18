@@ -1,5 +1,5 @@
 import 'antd/dist/antd.css'
-import '../src/app.css'
+import '../src/styles/app.css'
 import React, { StrictMode } from 'react'
 import App from 'next/app'
 

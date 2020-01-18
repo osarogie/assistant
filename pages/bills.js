@@ -5,13 +5,16 @@ import {
   useFirestoreCollectionData,
   useFirestore
 } from 'reactfire'
-import { PageContainer } from '../src/PageContainer'
+import { PageContainer } from '../src/components/PageContainer'
+import { Button } from 'antd'
+import Search from 'antd/lib/input/Search'
 
 const NewEntry = ({ saveAnimal }) => {
   const [text, setText] = useState('')
   const [disabled, setDisabled] = useState(false)
 
-  const onSave = () => {
+  const onSave = value => {
+    if (!value) return
     setDisabled(true)
     saveAnimal(text).then(() => {
       setText('')
@@ -21,15 +24,12 @@ const NewEntry = ({ saveAnimal }) => {
 
   return (
     <>
-      <input
-        value={text}
-        disabled={disabled}
-        placeholder="Iguana"
-        onChange={({ target }) => setText(target.value)}
+      <Search
+        placeholder="Add a bill"
+        enterButton="Done"
+        size="large"
+        onSearch={onSave}
       />
-      <button onClick={onSave} disabled={disabled || text.length < 3}>
-        Add new subscription
-      </button>
     </>
   )
 }
@@ -41,7 +41,9 @@ const List = ({ query, removeEntry }) => {
       {subs.map(sub => (
         <li key={sub.id}>
           {sub.commonName}{' '}
-          <button onClick={() => removeEntry(sub.id)}>X</button>
+          <Button type="danger" onClick={() => removeEntry(sub.id)}>
+            X
+          </Button>
         </li>
       ))}
     </ul>
@@ -50,7 +52,7 @@ const List = ({ query, removeEntry }) => {
 
 const FavoriteSubs = props => {
   const firestore = useFirestore()
-  const baseRef = firestore().collection('subscriptions')
+  const baseRef = firestore().collection('bills')
   const [isAscending, setIsAscending] = useState(true)
   const query = baseRef.orderBy('commonName', isAscending ? 'asc' : 'desc')
   const [startTransition, isPending] = useTransition({
