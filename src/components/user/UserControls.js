@@ -1,6 +1,7 @@
 import { SuspenseWithPerf, useUser, useAuth } from 'reactfire'
 import { PageHeader, Button } from 'antd'
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
+import { Loader } from '../Loader'
 
 const signOut = auth =>
   auth()
@@ -43,10 +44,7 @@ function Content() {
 
 export function UserControls() {
   return (
-    <SuspenseWithPerf
-      traceId={'firebase-user-wait'}
-      fallback={<p>loading...</p>}
-    >
+    <SuspenseWithPerf traceId={'firebase-user-wait'} fallback={<Loader />}>
       <Content />
     </SuspenseWithPerf>
   )

@@ -8,6 +8,7 @@ import {
 import { PageContainer } from '../src/components/PageContainer'
 import { Button } from 'antd'
 import Search from 'antd/lib/input/Search'
+import { Loader } from '../src/components/Loader'
 
 const NewEntry = ({ saveAnimal }) => {
   const [text, setText] = useState('')
@@ -76,7 +77,7 @@ const FavoriteSubs = props => {
       <button onClick={toggleSort} disabled={isPending}>
         Sort {isAscending ? '^' : 'v'}
       </button>
-      <React.Suspense fallback="loading...">
+      <React.Suspense fallback={<Loader />}>
         <List query={query} removeEntry={removeEntry} />
       </React.Suspense>
     </>
@@ -86,7 +87,7 @@ const FavoriteSubs = props => {
 export default function() {
   return (
     <PageContainer>
-      <SuspenseWithPerf fallback="loading..." traceId="firestore-demo-root">
+      <SuspenseWithPerf fallback={<Loader />} traceId="firestore-demo-root">
         <AuthCheck fallback="sign in to use Firestore">
           <SuspenseList revealOrder="together">
             <SuspenseWithPerf
